@@ -55,7 +55,7 @@ bot.onText(/\/test/, (msg) => {
 
 
 
-bot.onText(/\!driver (.+)$/, (msg, match) => {
+bot.onText(/\/driver (.+)$/, (msg, match) => {
 
   var driver = match[1];
   var url = "http://ergast.com/api/f1/drivers/" + driver + ".json";
