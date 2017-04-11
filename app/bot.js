@@ -37,16 +37,21 @@ bot.onText(/\!driver (.+)$/, (msg, match) => {
   request(url, function (error, response, body) {
     if (!error && response.statusCode == 200) {
       const chatId = msg.chat.id;
-      var json = body;
+      var json = JSON.parse(body);
 
-      var driverNumber = json.MRData.DriverTable.Drivers[0].permanentNumber;
-      var driverCode = json.MRData.DriverTable.Drivers[0].code;
-      var firstName = json.MRData.DriverTable.Drivers[0].givenName;
-      var lastName = json.MRData.DriverTable.Drivers[0].familyName;
 
-      var resp = firstName + " " + lastName + " " + driverNumber + " " + driverCode;
+      console.log(json);
+      console.log(json.MRData);
+      console.log(body);
 
-      bot.sendMessage(chatId, resp);
+      // var driverNumber = json.MRData.DriverTable.Drivers[0].permanentNumber;
+      //var driverCode = json.MRData.DriverTable.Drivers[0].code;
+      //var firstName = json.MRData.DriverTable.Drivers[0].givenName;
+      //var lastName = json.MRData.DriverTable.Drivers[0].familyName;
+
+      //var resp = firstName + " " + lastName + " " + driverNumber + " " + driverCode;
+
+      bot.sendMessage(chatId, body);
     }
   })
 });
