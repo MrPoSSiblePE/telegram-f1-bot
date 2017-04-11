@@ -1,0 +1,23 @@
+{
+  "name": "node-telegram-simple-bot",
+  "version": "0.0.1",
+  "description": "simple telegram bot",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "telegram bot",
+    "heroku"
+  ],
+  "author": "Tuomas Änäkkälä",
+  "license": "MIT",
+  "engines": {
+    "node": "7.2.x"
+  },
+  "dependencies": {
+    "express": "4.15.2",
+    "body-parser": "1.17.1",
+    "node-telegram-bot-api": "^0.21.1"
+  }
+}
