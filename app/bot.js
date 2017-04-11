@@ -72,13 +72,13 @@ bot.onText(/\!driver (.+)$/, (msg, match) => {
       var json = JSON.parse(body);
 
       var driverNumber = json.MRData.DriverTable.Drivers[0].permanentNumber;
-      //var driverCode = json.MRData.DriverTable.Drivers[0].code;
-      //var firstName = json.MRData.DriverTable.Drivers[0].givenName;
-      //var lastName = json.MRData.DriverTable.Drivers[0].familyName;
+      var driverCode = json.MRData.DriverTable.Drivers[0].code;
+      var firstName = json.MRData.DriverTable.Drivers[0].givenName;
+      var lastName = json.MRData.DriverTable.Drivers[0].familyName;
 
-      //var resp = firstName + " " + lastName + " " + driverNumber + " " + driverCode;
+      var resp = firstName + " " + lastName + " " + driverNumber + " " + driverCode;
 
-      bot.sendMessage(chatId, driverNumber);
+      bot.sendMessage(chatId, resp);
     }
   })
 });
