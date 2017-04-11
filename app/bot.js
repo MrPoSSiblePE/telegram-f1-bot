@@ -20,7 +20,7 @@ console.log("bot running");
 */
 bot.onText(/\/test/, (msg) => {
   const chatId = msg.chat.id;
-  const resp = "message received";
+  const resp = "message received t. bottas";
 
   bot.sendMessage(chatId, resp);
 });
