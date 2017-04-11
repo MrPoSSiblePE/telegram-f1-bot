@@ -16,8 +16,9 @@
     "node": "7.2.x"
   },
   "dependencies": {
-    "express": "4.15.2",
     "body-parser": "1.17.1",
-    "node-telegram-bot-api": "^0.21.1"
+    "express": "4.15.2",
+    "node-telegram-bot-api": "^0.21.1",
+    "parse-json": "^2.2.0"
   }
 }

@@ -1,2 +1,2 @@
 var bot = require('./app/bot.js');
-require('./app/webhook.js')(bot);
+require('./app/webapp.js')(bot);
