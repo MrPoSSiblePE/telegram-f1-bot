@@ -3,32 +3,6 @@ const TelegramBot = require('node-telegram-bot-api');
 var request = require('request');
 var env = process.env.NODE_ENV;
 
-var json = {
-  "MRData": {
-    "xmlns": "http://ergast.com/mrd/1.4",
-    "series": "f1",
-    "url": "http://ergast.com/api/f1/drivers/raikkonen.json",
-    "limit": "30",
-    "offset": "0",
-    "total": "1",
-    "DriverTable": {
-      "driverId": "raikkonen",
-      "Drivers": [
-        {
-          "driverId": "raikkonen",
-          "permanentNumber": "7",
-          "code": "RAI",
-          "url": "http://en.wikipedia.org/wiki/Kimi_R%C3%A4ikk%C3%B6nen",
-          "givenName": "Kimi",
-          "familyName": "Räikkönen",
-          "dateOfBirth": "1979-10-17",
-          "nationality": "Finnish"
-        }
-      ]
-    }
-  }
-}
-
 // Use polling when not in production
 if(env === "production") {
   const url = process.env.SERVICE_URL;
@@ -53,8 +27,11 @@ bot.onText(/\/test/, (msg) => {
 });
 
 
-
-
+/**
+* Listens on /driver, posts info
+* @param {string} msg
+* @param {string} match
+*/
 bot.onText(/\/driver (.+)$/, (msg, match) => {
 
   var driver = match[1];
@@ -64,18 +41,11 @@ bot.onText(/\/driver (.+)$/, (msg, match) => {
     if (!error && response.statusCode == 200) {
       const chatId = msg.chat.id;
 
-
-
-      // console.log(json);
-      // console.log(json.MRData);
-      // console.log(body);
       var json = JSON.parse(body);
-
       var driverNumber = json.MRData.DriverTable.Drivers[0].permanentNumber;
       var driverCode = json.MRData.DriverTable.Drivers[0].code;
       var firstName = json.MRData.DriverTable.Drivers[0].givenName;
       var lastName = json.MRData.DriverTable.Drivers[0].familyName;
-
       var resp = firstName + " " + lastName + " " + driverNumber + " " + driverCode;
 
       bot.sendMessage(chatId, resp);
