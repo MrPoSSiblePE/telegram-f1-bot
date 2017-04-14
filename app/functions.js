@@ -50,10 +50,8 @@ module.exports = function (bot) {
     var number = match[1];
     var url = "http://ergast.com/api/f1/current/driverStandings.json";
 
-    request(url, function (error, response, data) {
-      if (!error && response.statusCode == 200) {
+    queryData(url, function (json) {
         const chatId = msg.chat.id;
-        var json = JSON.parse(data);
         var standingsList = json.MRData.StandingsTable.StandingsLists[0];
         var season = json.MRData.StandingsTable.StandingsLists[0].season;
         var round = json.MRData.StandingsTable.StandingsLists[0].round;
@@ -68,8 +66,18 @@ module.exports = function (bot) {
 
         var resp = "Season " + season + " | Race " + round + "/" + total + "\n\n" + drivers;
         bot.sendMessage(chatId, resp);
+      });
+    });
+
+  function queryData(url, callback) {
+    request(url, function (error, response, data) {
+      if (!error && response.statusCode == 200) {
+        var json = JSON.parse(data);
+        callback(json);
       }
-    })
-  });
+    });
+  }
+
+
 
 };
