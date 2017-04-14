@@ -1,0 +1,4 @@
+#rename this file to .env, insert your own token
+PORT=8087
+TOKEN=token_here
+NODE_ENV=dev
