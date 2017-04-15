@@ -1,9 +1,9 @@
-const TOKEN = process.env.TOKEN || "your_token";
+const TOKEN = process.env.TOKEN;
 const TelegramBot = require('node-telegram-bot-api');
-var env = process.env.NODE_ENV;
+var environment = process.env.NODE_ENV;
 
 // Use polling when not in production
-if(env === "production") {
+if(environment === "production") {
   const url = process.env.SERVICE_URL;
   var bot = new TelegramBot(TOKEN);
   bot.setWebHook(url + "/" + TOKEN);
