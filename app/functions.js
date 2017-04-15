@@ -13,7 +13,7 @@ module.exports = function (bot) {
   });
 
   /**
-  * Listens on /test and answers
+  * Listens on /stream and answers
   * @param {string} msg Incoming message
   */
   bot.onText(/\/stream/, (msg) => {
