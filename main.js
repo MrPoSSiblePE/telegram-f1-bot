@@ -1,5 +1,5 @@
 var env = require('node-env-file');
-if(environment !== "production") {
+if(process.env.NODE_ENV !== "production") {
   env(__dirname + '/.env');
 }
 var bot = require('./app/bot.js');
