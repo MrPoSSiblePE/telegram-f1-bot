@@ -1,4 +1,4 @@
-// var env = require('node-env-file');
+var env = require('node-env-file');
 // env('.env');
 var bot = require('./app/bot.js');
 require('./app/webapp.js')(bot);
