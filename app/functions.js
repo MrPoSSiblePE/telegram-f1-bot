@@ -23,10 +23,8 @@ module.exports = function (bot) {
     var driver = match[1];
     var url = "http://ergast.com/api/f1/drivers/" + driver + ".json";
 
-    request(url, function (error, response, data) {
-      if (!error && response.statusCode == 200) {
+    queryData(url, function (json) {
         const chatId = msg.chat.id;
-        var json = JSON.parse(data);
         var driverNumber = json.MRData.DriverTable.Drivers[0].permanentNumber;
         var driverCode = json.MRData.DriverTable.Drivers[0].code;
         var firstName = json.MRData.DriverTable.Drivers[0].givenName;
@@ -35,7 +33,6 @@ module.exports = function (bot) {
         var resp = driverNumber + " " + driverCode + " - " + firstName + " " + lastName + "\n" + url;
 
         bot.sendMessage(chatId, resp);
-      }
     })
   });
 
