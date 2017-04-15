@@ -12,6 +12,15 @@ module.exports = function (bot) {
     bot.sendMessage(chatId, resp);
   });
 
+  /**
+  * Listens on /test and answers
+  * @param {string} msg Incoming message
+  */
+  bot.onText(/\/stream/, (msg) => {
+    const chatId = msg.chat.id;
+    const resp = "https://www.reddit.com/r/motorsportsstreams/";
+    bot.sendMessage(chatId, resp);
+  });
 
   /**
   * Listens on /driver, posts info
