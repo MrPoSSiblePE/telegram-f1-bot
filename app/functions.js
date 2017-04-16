@@ -51,9 +51,10 @@ module.exports = function (bot) {
   * @param {string} msg
   * @param {string} match
   */
-  bot.onText(/\/standings (.+)$/, (msg, match) => {
-
-    var number = match[1];
+  bot.onText(/\/standings/, (msg) => {
+    var str = msg.text;
+    var arr = str.split(" ");
+    var number = arr[1] || 10;
     var url = "http://ergast.com/api/f1/current/driverStandings.json";
 
     queryData(url, function (json) {
@@ -65,6 +66,9 @@ module.exports = function (bot) {
         var drivers = "";
 
         for (i = 0; i < number; i++) {
+          if (i == json.MRData.total) {
+            break;
+          }
           drivers += standingsList.DriverStandings[i].position + ". ";
           drivers += standingsList.DriverStandings[i].Driver.code + " ";
           drivers += " - " + standingsList.DriverStandings[i].points + " points \n";
