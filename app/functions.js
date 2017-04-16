@@ -3,16 +3,6 @@ module.exports = function (bot) {
 
 
   /**
-  * Listens on /test and answers
-  * @param {string} msg Incoming message
-  */
-  bot.onText(/\/test/, (msg) => {
-    const chatId = msg.chat.id;
-    const resp = "message received t. bottas"
-    bot.sendMessage(chatId, resp);
-  });
-
-  /**
   * Listens on /stream and answers
   * @param {string} msg Incoming message
   */
