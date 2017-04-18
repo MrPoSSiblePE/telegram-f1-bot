@@ -1,4 +1,5 @@
 var request = require('request');
+var ical = require('ical');
 module.exports = function (bot) {
 
 
@@ -23,15 +24,15 @@ module.exports = function (bot) {
     var url = "http://ergast.com/api/f1/drivers/" + driver + ".json";
 
     queryData(url, function (json) {
-        const chatId = msg.chat.id;
-        var driverNumber = json.MRData.DriverTable.Drivers[0].permanentNumber;
-        var driverCode = json.MRData.DriverTable.Drivers[0].code;
-        var firstName = json.MRData.DriverTable.Drivers[0].givenName;
-        var lastName = json.MRData.DriverTable.Drivers[0].familyName;
-        var url = json.MRData.DriverTable.Drivers[0].url;
-        var resp = driverNumber + " " + driverCode + " - " + firstName + " " + lastName + "\n" + url;
+      const chatId = msg.chat.id;
+      var driverNumber = json.MRData.DriverTable.Drivers[0].permanentNumber;
+      var driverCode = json.MRData.DriverTable.Drivers[0].code;
+      var firstName = json.MRData.DriverTable.Drivers[0].givenName;
+      var lastName = json.MRData.DriverTable.Drivers[0].familyName;
+      var url = json.MRData.DriverTable.Drivers[0].url;
+      var resp = driverNumber + " " + driverCode + " - " + firstName + " " + lastName + "\n" + url;
 
-        bot.sendMessage(chatId, resp);
+      bot.sendMessage(chatId, resp);
     })
   });
 
@@ -64,10 +65,37 @@ module.exports = function (bot) {
           drivers += " - " + standingsList.DriverStandings[i].points + " points \n";
         }
 
-        var resp = "Season " + season + " | Race " + round + "/" + total + "\n\n" + drivers;
-        bot.sendMessage(chatId, resp);
-      });
+      var resp = "Season " + season + " | Race " + round + "/" + total + "\n\n" + drivers;
+      bot.sendMessage(chatId, resp);
     });
+  });
+
+  bot.onText(/\/next/, (msg) => {
+    const chatId = msg.chat.id;
+    ical.fromURL('https://www.f1calendar.com/download/f1-calendar_p1_p2_p3_q_gp.ics', {}, function (err, data) {
+      var resp = "";
+      for (var k in data) {
+        if (data.hasOwnProperty(k)) {
+          ///console.log(data[k].summary);
+          var sessionStr = data[k].dtstamp;
+          var sessionDate = new Date(sessionStr.slice(0, 4), parseInt(sessionStr.slice(4, 6) - 1), sessionStr.slice(6, 8), sessionStr.slice(9, 11), sessionStr.slice(11, 13), 0, 0);
+          sessionDate.setUTCHours(sessionStr.slice(9, 11));
+
+          if (data[k].end > Date.now()) {
+            if (data[k].start < Date.now()) {
+              resp += 'Ongoing: ' + data[k].summary + '\r\n';
+            }
+            if (data[k].start > Date.now()) {
+              resp += "Next session: " + data[k].summary + " " + sessionDate;
+              bot.sendMessage(chatId, resp);
+              break;
+            }
+          }
+        }
+      }
+    });
+  });
+
 
   function queryData(url, callback) {
     request(url, function (error, response, data) {

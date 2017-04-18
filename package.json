@@ -21,6 +21,7 @@
     "express": "4.15.2",
     "node-telegram-bot-api": "^0.21.1",
     "parse-json": "^2.2.0",
+    "ical" : "0.5.0",
     "node-env-file": "0.1.8"
   }
 }
