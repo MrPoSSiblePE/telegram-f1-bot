@@ -1,5 +1,6 @@
 var request = require('request');
 var ical = require('ical');
+var cache = require('memory-cache');
 module.exports = function (bot) {
 
 
@@ -113,15 +114,30 @@ module.exports = function (bot) {
   });
 
 
+  /**
+   * Sends and caches requests and responses
+   * @param {string} url url to send request to
+   * @param {function} callback callback
+   */
   function queryData(url, callback) {
-    request(url, function (error, response, data) {
-      if (!error && response.statusCode == 200) {
-        var json = JSON.parse(data);
+    var cachedResp = cache.get(url);
+
+    // Check if this url exists in cache
+    if (cachedResp) {
+      callback(cachedResp);
+    } else {
+      request(url, function (error, response, data) {
+        if (!error && response.statusCode == 200) {
+          var json = JSON.parse(data);
+
+          // Cache request and response for 30 minutes
+          cache.put(url, json, 30 * 60 * 1000, function(key, value){
+            console.log("Cached response with key: " + key);
+          });
+        }
         callback(json);
-      }
-    });
+      });
+    }
   }
-
-
 
 };
