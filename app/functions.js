@@ -70,9 +70,25 @@ module.exports = function (bot) {
     });
   });
 
-  bot.onText(/\/next/, (msg) => {
+  /**
+  * Listens on /next, posts information on next session
+  * @param {string} msg
+  * @param {string} match
+  */
+  bot.onText(/\/next(\s)*(.*)$/, (msg, match) => {
     const chatId = msg.chat.id;
-    ical.fromURL('https://www.f1calendar.com/download/f1-calendar_p1_p2_p3_q_gp.ics', {}, function (err, data) {
+    var url = 'https://www.f1calendar.com/download/f1-calendar_p1_p2_p3_q_gp.ics';
+    console.log(match);
+    
+    if (match[2] == 'gp') {
+      url = 'https://www.f1calendar.com/download/f1-calendar_gp.ics';
+    }
+
+    if (match[2] == 'quali') {
+      url = 'https://www.f1calendar.com/download/f1-calendar_q.ics';
+    }
+
+    ical.fromURL(url, {}, function (err, data) {
       var resp = "";
       for (var k in data) {
         if (data.hasOwnProperty(k)) {
