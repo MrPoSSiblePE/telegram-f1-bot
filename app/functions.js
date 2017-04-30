@@ -80,7 +80,7 @@ module.exports = function (bot) {
     const chatId = msg.chat.id;
     var url = 'https://www.f1calendar.com/download/f1-calendar_p1_p2_p3_q_gp.ics';
     console.log(match);
-    
+
     if (match[2] == 'gp') {
       url = 'https://www.f1calendar.com/download/f1-calendar_gp.ics';
     }
@@ -112,6 +112,32 @@ module.exports = function (bot) {
       }
     });
   });
+
+
+  /**
+   * Fetch random imgur images (top / month) from formula1 subreddit
+   * @param {string} msg
+   */
+   bot.onText(/\/imgur/, (msg) => {
+      const chatId = msg.chat.id;
+      const clientID = process.env.IMGUR_CLIENTID;
+      var auth = 'Client-ID ' + clientID;
+
+      var options = {
+        url: 'https://api.imgur.com/3/gallery/r/formula1/top/month/',
+        headers: {
+        'Authorization' : auth
+        }
+      };
+
+      queryData(options, function (json) {
+        var data = json.data;
+        var rand = Math.floor(Math.random()*data.length);
+        var resp = data[rand].title + "\n" + data[rand].link;
+        bot.sendMessage(chatId, resp);
+      });
+
+   });
 
 
   /**
