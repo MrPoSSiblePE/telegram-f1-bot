@@ -139,6 +139,16 @@ module.exports = function (bot) {
 
    });
 
+   /**
+    * Fetch random imgur images (top / month) from formula1 subreddit
+    * @param {string} msg
+    */
+    bot.onText(/\/bottas/, (msg) => {
+       const chatId = msg.chat.id;
+       var resp = "hyvä mika! p.s. hyvä kisa valtteri"
+
+         bot.sendMessage(chatId, resp);
+       });
 
   /**
    * Sends and caches requests and responses
