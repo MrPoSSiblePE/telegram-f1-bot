@@ -144,7 +144,7 @@ module.exports = function (bot) {
         if (newstanding.newPoints > 0) {
           console.log(newposition, newstanding.driverCode, newstanding.racePoints, newstanding.newPoints, diff);
           drivers += newposition + ". ";
-          drivers += newstanding.driverCode + " - " + newstanding.newPoints + " points " + newstanding.racePoints + "\n";
+          drivers += newstanding.driverCode + " - " + newstanding.newPoints + " points " + newstanding.racePoints + " " + diff + "\n";
         }
       }
 
