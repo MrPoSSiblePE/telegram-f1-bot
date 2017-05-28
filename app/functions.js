@@ -1,6 +1,7 @@
 var request = require('request');
 var ical = require('ical');
 var cache = require('memory-cache');
+
 module.exports = function (bot) {
 
 
@@ -12,6 +13,17 @@ module.exports = function (bot) {
     const chatId = msg.chat.id;
     const resp = "https://www.reddit.com/r/motorsportsstreams/";
     bot.sendMessage(chatId, resp);
+  });
+
+  bot.onText(/\/kill/, (msg) => {
+    const chatId = msg.chat.id;
+    if (process.env.NODE_ENV == "dev") {
+      console.log('Killing process');
+      bot.sendMessage(chatId, "Killing process");
+      setTimeout(function () {
+        process.exit();
+      }, 2000);
+    }
   });
 
   /**
@@ -50,23 +62,93 @@ module.exports = function (bot) {
     var url = "http://ergast.com/api/f1/current/driverStandings.json";
 
     queryData(url, function (json) {
-        const chatId = msg.chat.id;
-        var standingsList = json.MRData.StandingsTable.StandingsLists[0];
-        var season = json.MRData.StandingsTable.StandingsLists[0].season;
-        var round = json.MRData.StandingsTable.StandingsLists[0].round;
-        var total = json.MRData.total;
-        var drivers = "";
+      const chatId = msg.chat.id;
+      var standingsList = json.MRData.StandingsTable.StandingsLists[0];
+      var season = json.MRData.StandingsTable.StandingsLists[0].season;
+      var round = json.MRData.StandingsTable.StandingsLists[0].round;
+      var total = json.MRData.total;
+      var drivers = "";
 
-        for (i = 0; i < number; i++) {
-          if (i == json.MRData.total) {
-            break;
-          }
-          drivers += standingsList.DriverStandings[i].position + ". ";
-          drivers += standingsList.DriverStandings[i].Driver.code + " ";
-          drivers += " - " + standingsList.DriverStandings[i].points + " points \n";
+      for (i = 0; i < number; i++) {
+        if (i == json.MRData.total) {
+          break;
         }
+        drivers += standingsList.DriverStandings[i].position + ". ";
+        drivers += standingsList.DriverStandings[i].Driver.code + " ";
+        drivers += " - " + standingsList.DriverStandings[i].points + " points \n";
+      }
 
       var resp = "Season " + season + " | Race " + round + "/" + total + "\n\n" + drivers;
+      bot.sendMessage(chatId, resp);
+    });
+  });
+
+  /**
+  * Listens on /live, posts standings table with points from ongoing gp
+  * @param {string} msg
+  * @param {string} match
+  */
+  bot.onText(/\/live/, (msg) => {
+    var live = require('./f1live');
+    var liveStandings = live.Standings;
+    var str = msg.text;
+    var arr = str.split(" ");
+    var number = arr[1] || 10;
+    var url = "http://ergast.com/api/f1/current/driverStandings.json";
+
+    queryData(url, function (json) {
+      const chatId = msg.chat.id;
+      var standingsList = json.MRData.StandingsTable.StandingsLists[0];
+      var season = json.MRData.StandingsTable.StandingsLists[0].season;
+      var round = json.MRData.StandingsTable.StandingsLists[0].round;
+      var total = json.MRData.total;
+      var drivers = "";
+      var livepositions = [];
+
+      for (i = 0; i < json.MRData.total; i++) {
+        if (i == json.MRData.total) {
+          break;
+        }
+        var liveData = liveStandings[standingsList.DriverStandings[i].Driver.givenName + " " + standingsList.DriverStandings[i].Driver.familyName];
+        console.log(liveData);
+
+        // TODO: tää käsittely paremmaks ja laske pisteet
+        if (liveData != undefined) {
+          var livePoints = parseInt(standingsList.DriverStandings[i].points) + liveData.points;
+          livepositions.push({
+              origPosition : standingsList.DriverStandings[i].position,
+              newPoints : livePoints,
+              driverCode : standingsList.DriverStandings[i].Driver.code,
+              racePoints: liveData.pointsStr
+          });
+        } else {
+          livepositions.push({
+              origPosition : standingsList.DriverStandings[i].position,
+              newPoints : parseInt(standingsList.DriverStandings[i].points),
+              driverCode : standingsList.DriverStandings[i].Driver.code,
+              racePoints: ''
+          });
+        }
+      }
+
+      livepositions.sort(function (a, b) {
+        return b.newPoints - a.newPoints;
+      })
+
+      console.log(livepositions);
+
+      for (var i = 0; i < livepositions.length; i++) {
+        var newstanding = livepositions[i];
+        var newposition = i + 1;
+        var diff = positionDifference(livepositions[i].origPosition, newposition);
+        if (newstanding.newPoints > 0) {
+          console.log(newposition, newstanding.driverCode, newstanding.racePoints, newstanding.newPoints, diff);
+          drivers += newposition + ". ";
+          drivers += newstanding.driverCode + " - " + newstanding.newPoints + " points " + newstanding.racePoints + "\n";
+        }
+      }
+
+      var resp = "Championship standings with current race positions \n\n" + drivers;
       bot.sendMessage(chatId, resp);
     });
   });
@@ -118,26 +200,37 @@ module.exports = function (bot) {
    * Fetch random imgur images (top / month) from formula1 subreddit
    * @param {string} msg
    */
-   bot.onText(/\/imgur/, (msg) => {
-      const chatId = msg.chat.id;
-      const clientID = process.env.IMGUR_CLIENTID;
-      var auth = 'Client-ID ' + clientID;
+  bot.onText(/\/imgur/, (msg) => {
+    const chatId = msg.chat.id;
+    const clientID = process.env.IMGUR_CLIENTID;
+    var auth = 'Client-ID ' + clientID;
 
-      var options = {
-        url: 'https://api.imgur.com/3/gallery/r/formula1/top/month/',
-        headers: {
-        'Authorization' : auth
-        }
-      };
+    var options = {
+      url: 'https://api.imgur.com/3/gallery/r/formula1/top/month/',
+      headers: {
+        'Authorization': auth
+      }
+    };
 
-      queryData(options, function (json) {
-        var data = json.data;
-        var rand = Math.floor(Math.random()*data.length);
-        var resp = data[rand].title + "\n" + data[rand].link;
-        bot.sendMessage(chatId, resp);
-      });
+    queryData(options, function (json) {
+      var data = json.data;
+      var rand = Math.floor(Math.random() * data.length);
+      var resp = data[rand].title + "\n" + data[rand].link;
+      bot.sendMessage(chatId, resp);
+    });
 
-   });
+  });
+
+  function positionDifference(a, b) {
+    var diff = a-b;
+    if (a > b) {
+       return '+'+ diff +' positions';
+    }
+    if (a < b) {
+       return a-b +" positions";
+    }
+    return "";
+  }
 
    /**
     * Fetch random imgur images (top / month) from formula1 subreddit
@@ -167,7 +260,7 @@ module.exports = function (bot) {
           var json = JSON.parse(data);
 
           // Cache request and response for 30 minutes
-          cache.put(url, json, 30 * 60 * 1000, function(key, value){
+          cache.put(url, json, 30 * 60 * 1000, function (key, value) {
             console.log("Cached response with key: " + key);
           });
         }
