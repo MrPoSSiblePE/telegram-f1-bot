@@ -2,6 +2,8 @@ var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 var fs = require('fs');
 var cheerio = require('cheerio');
 
+var pointstable = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
+
 module.exports.Standings = getLiveData();
 
 
@@ -30,9 +32,12 @@ function getLiveData() {
             liveStandings["Sergio Pérez"] = driver;
         }
 
-        if (driver.points.length > 0) {
-            driver.pointsStr = driver.points;
-            driver.points = parseInt(driver.points);
+        if (driver.position < 11) {
+
+            //driver.pointsStr = driver.points;
+            //driver.points = parseInt(driver.points);
+            driver.points = pointstable[driver.position -1];
+            driver.pointsStr = "(+" + driver.points + ")";
         } else {
             driver.points = 0;
             driver.pointsStr = "";
