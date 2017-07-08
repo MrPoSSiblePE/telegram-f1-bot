@@ -221,6 +221,22 @@ module.exports = function (bot) {
 
   });
 
+  bot.onText(/\/bottaswmr/, (msg) => {
+    const chatId = msg.chat.id;
+    var url = 'http://www.reddit.com/user/BottasWMR/.json?sort=new&limit=1';
+
+    queryData(url, function (json) {
+      var data = json.data.children[0].data;
+      var author = data.author;
+      var permalink = data.link_permalink;
+      var subreddit = data.subreddit_name_prefixed;
+
+      var resp = author + " at " + subreddit + "\n" + permalink;
+      bot.sendMessage(chatId, resp);
+    });
+
+  });
+
   function positionDifference(a, b) {
     var diff = a-b;
     if (a > b) {
