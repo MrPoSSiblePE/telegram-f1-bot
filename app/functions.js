@@ -1,9 +1,40 @@
 var request = require('request');
 var ical = require('ical');
 var cache = require('memory-cache');
+var fs = require('fs');
+var cheerio = require('cheerio');
+var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+var live = require('./f1live');
 
 module.exports = function (bot) {
 
+
+  /**
+  * Listens on /ace and answers
+  * @param {string} msg Incoming message
+  */
+  bot.onText(/\/ace/, (msg) => {
+    const chatId = msg.chat.id;
+    var resp = "";
+
+    var page = doXHRRequest('http://f1ace.stream/beta/');
+    $ = cheerio.load(page);
+
+    var streamPanels = $(".panel");
+    resp = $(".jumbotron").find('h2').text() + '\n\n';
+
+
+    streamPanels.each(function() {
+      var heading = $(this).find('div > h3').text().trim();
+      var val = $(this).find('div > input').attr('value').trim();
+      resp += heading + '\n' + val + '\n\n';
+      console.log(resp);
+    });
+
+    bot.sendMessage(chatId, resp);
+
+
+  });
 
   /**
   * Listens on /stream and answers
@@ -89,7 +120,6 @@ module.exports = function (bot) {
   * @param {string} match
   */
   bot.onText(/\/live/, (msg) => {
-    var live = require('./f1live');
     var liveStandings = live.Standings;
     var str = msg.text;
     var arr = str.split(" ");
@@ -267,6 +297,18 @@ module.exports = function (bot) {
         callback(json);
       });
     }
+  }
+
+
+  /**
+   * Makes a XHR request to the given URL and returns the response text
+   * @param {*} url
+   */
+  function doXHRRequest(url) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', url, false);
+      xhr.send(null);
+      return xhr.responseText;
   }
 
 };
