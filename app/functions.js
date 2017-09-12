@@ -17,19 +17,23 @@ module.exports = function (bot) {
     const chatId = msg.chat.id;
     var resp = "";
 
-    var page = doXHRRequest('http://f1ace.stream/beta/');
+    var page = doXHRRequest('http://f1ace.stream/');
     $ = cheerio.load(page);
 
-    var streamPanels = $(".panel");
+    var inputs = $("[id^=ace]");
     resp = $(".jumbotron").find('h2').text() + '\n\n';
 
+    inputs.each(function() {
+      var val = $(this).attr('value').trim();
+      resp += val + '\n\n';
+    })
 
-    streamPanels.each(function() {
+    /*streamPanels.each(function() {
       var heading = $(this).find('div > h3').text().trim();
       var val = $(this).find('div > input').attr('value').trim();
       resp += heading + '\n' + val + '\n\n';
       console.log(resp);
-    });
+    });*/
 
     bot.sendMessage(chatId, resp);
 

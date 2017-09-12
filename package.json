@@ -17,18 +17,18 @@
     "node": "7.2.x"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/pomppa/telegram-f1-bot"
+    "type": "git",
+    "url": "https://github.com/pomppa/telegram-f1-bot"
   },
   "dependencies": {
     "body-parser": "1.17.2",
+    "cheerio": "latest",
     "express": "4.15.3",
     "ical": "0.5.0",
     "memory-cache": "^0.2.0",
     "node-env-file": "0.1.8",
     "node-telegram-bot-api": "^0.27.1",
     "parse-json": "^2.2.0",
-    "xmlhttprequest": "1.8.0",
-    "cheerio" : "latest"
+    "xmlhttprequest": "1.8.0"
   }
 }
