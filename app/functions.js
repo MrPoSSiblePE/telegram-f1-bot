@@ -16,25 +16,18 @@ module.exports = function (bot) {
   bot.onText(/\/ace/, (msg) => {
     const chatId = msg.chat.id;
     var resp = "";
+    var val = '';
 
-    var page = doXHRRequest('http://f1ace.stream/');
-    $ = cheerio.load(page);
+    var data = doXHRRequest('http://138.197.183.39/api/acestreams');
+    var obj = JSON.parse(data);
 
-    var inputs = $("[id^=ace]");
-    resp = $(".jumbotron").find('h2').text() + '\n\n';
+    obj.forEach(function(obj) {
+      var details = obj.details;
+      var acestreamid = obj.acestreamid;
+      val += details + '\n' + acestreamid + '\n\n';
+    });
 
-    inputs.each(function() {
-      var val = $(this).attr('value').trim();
-      resp += val + '\n\n';
-    })
-
-    /*streamPanels.each(function() {
-      var heading = $(this).find('div > h3').text().trim();
-      var val = $(this).find('div > input').attr('value').trim();
-      resp += heading + '\n' + val + '\n\n';
-      console.log(resp);
-    });*/
-
+    resp = val;
     bot.sendMessage(chatId, resp);
 
 
