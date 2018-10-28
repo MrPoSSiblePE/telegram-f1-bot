@@ -12,7 +12,7 @@ module.exports = function (bot) {
   /**
   * Listens on /ace and answers
   * @param {string} msg Incoming message
- 
+  */
   bot.onText(/\/ace/, (msg) => {
     const chatId = msg.chat.id;
     var resp = "";
@@ -32,7 +32,7 @@ module.exports = function (bot) {
 
 
   });
- */
+ 
 
  
   /**
